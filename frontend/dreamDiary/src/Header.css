@@ -1,0 +1,96 @@
+header {
+    width: 90%;
+    height: 8vh;
+    padding: 1vh 5%;
+    display: flex;
+    justify-content: space-between;
+    line-height: 8vh;
+    box-shadow: 0 0 10px 3px rgba(0,0,0,0.55);
+    position: fixed;
+    z-index: 10;
+    background-color: #FFFF;
+}
+
+header .logo {
+    font-size: 4vmin;
+}
+
+header nav {
+    width: 60%;
+}
+
+header ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+}
+
+header ul a {
+    display: block;
+    /* width: 15%; */
+    text-decoration: none;
+    color: inherit;
+}
+
+header ul a:hover {
+    background-color: rgba(0,0,0,0.2);
+}
+
+header ul li {
+    display: flex;
+    padding: 0 1vw;
+}
+
+header ul li div {
+    width: 2vw;
+}
+
+header ul li img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+header ul li p {
+    margin-left: 1vw;
+}
+
+header ul .user {
+    font-size: 4vmin;
+    text-align: center;
+    position: relative;
+}
+
+header ul .user p {
+    margin-left: 0;
+}
+
+header ul .user .down {
+    font-size: 1.5vmin;
+}
+
+header ul .user .menu {
+    position: absolute;
+    bottom: calc(-17vh + -2px);
+    width: 10vw;
+    height: 15vh;
+    right: -2vw;
+    font-size: 2vmin;
+    
+    background-color: #FFFF;
+    z-index: 10;
+    border: 1px solid;
+    padding: 0.5vh 0.5vw;
+}
+
+header ul .user .menu p {
+    display: block;
+    line-height: 5vh;
+    height: 5vh;
+}
+
+header ul .user .menu .menuIcon {
+    margin-right: 0.5vw;
+}

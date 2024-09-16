@@ -1,0 +1,33 @@
+import React from "react";
+import './App.css';
+import Header from "./Header";
+import View from "./View";
+import Login from "./Login";
+import Signup from "./Signup"; // サインアップページを想定
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+
+function App() {
+  const location = useLocation();
+
+  return (
+    <div className="App">
+      {/* 現在のパスが "/login" または "/signup" でない場合に Header を表示 */}
+      {location.pathname !== "/login" && location.pathname !== "/signup" && <Header />}
+      <Routes>
+        <Route path="/" element={<View />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} /> {/* サインアップルート */}
+      </Routes>
+    </div>
+  );
+}
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
+
+export default AppWrapper;
