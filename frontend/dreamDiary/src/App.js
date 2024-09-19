@@ -5,6 +5,7 @@ import View from "./View";
 import Login from "./Login";
 import Signup from "./Signup"; // サインアップページを想定
 import Post from "./Post";
+import Profile from "./Profile";
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 function App() {

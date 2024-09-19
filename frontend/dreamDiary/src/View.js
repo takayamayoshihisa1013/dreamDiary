@@ -173,6 +173,12 @@ function View() {
                     </Link>
                     <Link to={"/"}>
                         <li>
+                            <p className="navIcon"><i class="fa-solid fa-user"></i></p>
+                            <p className="navValue">マイページ</p>
+                        </li>
+                    </Link>
+                    <Link to={"/"}>
+                        <li>
                             <p className="navIcon"><i class="fa-solid fa-users"></i></p>
                             <p className="navValue">フォロー・フォロワー</p>
 
@@ -195,10 +201,8 @@ function View() {
                     </Link>
                     <Link to={"/"}>
                         <li>
-                            <p className="navIcon"><i class="fa-solid fa-user-gear"></i></p>
-
-                            <p className="navValue">アカウント・設定</p>
-
+                            <p className="navIcon"><i class="fa-solid fa-gear"></i></p>
+                            <p className="navValue">設定</p>
                         </li>
                     </Link>
                 </ul>
