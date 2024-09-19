@@ -4,6 +4,7 @@ import Header from "./Header";
 import View from "./View";
 import Login from "./Login";
 import Signup from "./Signup"; // サインアップページを想定
+import Post from "./Post";
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<View />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} /> {/* サインアップルート */}
+        <Route path="/post" element={<Post />} />
       </Routes>
     </div>
   );

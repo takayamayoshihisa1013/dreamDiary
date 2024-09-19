@@ -170,6 +170,11 @@ nav ul li .navValue {
     display: flex;
 }
 
+.postList .post .postFooter .commentButton {
+    color: blue;
+    cursor: default;
+}
+
 .postList .post .postFooter .favoriteButton .likeNum {
     margin-left: 0.2vw;
 }
@@ -177,6 +182,86 @@ nav ul li .navValue {
 .postList .post .postFooter .bookmark {
     color: #afeeee;
 }
+
+
+
+
+
+
+
+.postList .comment {
+    width: 90%;
+    border: 1px solid #d3d3d3;
+    margin: 1vh auto 0;
+    padding: 2%;
+    border-radius: 10px;
+}
+
+.postList .comment .commentHeader {
+    height: 5vh;
+    line-height: 5vh;
+    display:flex ;
+    width: 100%;
+    margin: 0 auto;
+    justify-content: flex-start;
+    border-bottom: 1px solid #dcdcdc;
+    padding-bottom: 1vh;
+}
+
+.postList .comment .commentHeader .commentUserIcon {
+    width: 35px;
+    height: 35px;
+}
+
+.postList .comment .commentHeader .commentUserIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.postList .comment .commentHeader .username {
+    width: 65%;
+    text-align: start;
+    margin-left: 0.5vw;
+}
+
+.postList .comment .commentHeader .commentTime {
+    width: 25%;
+    text-align: start;
+}
+
+.postList .comment .commentBody {
+    margin-top: 1vh;
+    min-height: 5vh;
+    font-size: 2.1vmin;
+    margin-bottom: 2vh;
+}
+
+.postList .comment .commentBody .commentText {
+    width: 100%;
+    margin-top: 1vh;
+}
+
+.postList .comment .commentBody .commentImageDiv {
+    width: 100%;
+    height: 70vh;
+    
+}
+
+.postList .comment .commentBody .commentImageDiv img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+
+}
+
+
+
+
+
+
+
 
 
 
@@ -251,7 +336,7 @@ nav ul li .navValue {
     cursor: pointer;
 }
 
-.addPostForm {
+.addCommentForm {
     width: 100%;
     height: 100vh;
     position: fixed;
@@ -260,7 +345,7 @@ nav ul li .navValue {
     /* display: none; */
 }
 
-.addPostForm .addPostFormDiv {
+.addCommentForm .addCommentFormDiv {
     background-color: #FFFF;
     width: 36%;
     margin: 10vh 30%;
@@ -270,7 +355,7 @@ nav ul li .navValue {
     position: relative;
 }
 
-.addPostForm input {
+.addCommentForm input {
     display: block;
     border-radius: 10px;
     width:  98%;
@@ -279,31 +364,31 @@ nav ul li .navValue {
     padding: 1vh 1%;
 }
 
-.addPostForm p {
+.addCommentForm p {
     font-size: 2.5vmin;
     line-height: 5vh;
     height: 5vh;
 }
 
-.addPostForm .addPostFormDiv textarea {
+.addCommentForm .addCommentFormDiv textarea {
     width: 98%;
-    height: 50vh;
+    height: 60vh;
     resize: none;
     padding: 1vh 1%;
     border-radius: 10px;
     font-size: 2.3vmin;
 }
 
-.addPostForm .addPostFormDiv .buttons {
+.addCommentForm .addCommentFormDiv .buttons {
     display: flex;
     justify-content: space-between;
 }
 
-.addPostForm .addPostFormDiv input[type="file"] {
+.addCommentForm .addCommentFormDiv input[type="file"] {
     display: none;
 }
 
-.addPostForm .addPostFormDiv .postImages {
+.addCommentForm .addCommentFormDiv .commentImages {
     width: 49%;
     height: 6vh;
     margin-top: 1vh;
@@ -315,11 +400,11 @@ nav ul li .navValue {
     text-align: center;
 }
 
-.addPostForm .addPostFormDiv .buttons i {
+.addCommentForm .addCommentFormDiv .buttons i {
     margin-right: 0.3vw;
 }
 
-.addPostForm .addPostFormDiv .addPostSubmit {
+.addCommentForm .addCommentFormDiv .addCommentSubmit {
     width: 49%;
     height: 6vh;
     margin-top: 1vh;
@@ -328,7 +413,7 @@ nav ul li .navValue {
     border: none;
 }
 
-.addPostForm .formClose {
+.addCommentForm .formClose {
     position: absolute;
     top: -4vh;
     right: 0;

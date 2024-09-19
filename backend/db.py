@@ -22,8 +22,38 @@ cur.execute("""
                 )
             """)
 
-conn.commit()
 
 cur.execute("""
-            CREATE TABLE IF NOT EXISTS post
+            CREATE TABLE IF NOT EXISTS postLike(
+                id VARCHAR(36) PRIMARY KEY,
+                post_id VARCHAR(36),
+                user_id VARCHAR(36),
+                FOREIGN KEY(post_id) REFERENCES post(id),
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            )
             """)
+
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS bookmark(
+                id VARCHAR(36) PRIMARY KEY,
+                post_id VARCHAR(36),
+                user_id VARCHAR(36),
+                FOREIGN KEY(post_id) REFERENCES post(id),
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            )
+            """)
+
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS comment(
+                Id VARCHAR(36) PRIMARY KEY,
+                post_id VARCHAR(36),
+                user_id VARCHAR(36),
+                comment_text TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(post_id) REFERENCES post(id),
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            )
+            """)
+
+conn.commit()
+
