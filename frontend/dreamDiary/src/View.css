@@ -116,6 +116,11 @@ nav ul li .navValue {
     margin-left: 0.5vw;
 }
 
+.postList .post .postHeader .username a {
+    color: inherit;
+    text-decoration: none;
+}
+
 .postList .post .postHeader .postTime {
     width: 25%;
     text-align: start;
@@ -141,14 +146,12 @@ nav ul li .navValue {
 .postList .post .postBody .postImageDiv {
     width: 100%;
     height: 70vh;
-    
 }
 
 .postList .post .postBody .postImageDiv img {
     object-fit: cover;
     width: 100%;
     height: 100%;
-
 }
 
 .postList .post .postFooter {

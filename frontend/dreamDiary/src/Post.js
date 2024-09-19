@@ -195,7 +195,7 @@ function Post() {
 
                         </li>
                     </Link>
-                    <Link to={"/"}>
+                    <Link to={"/profile"}>
                         <li>
                             <p className="navIcon"><i class="fa-solid fa-user"></i></p>
                             <p className="navValue">マイページ</p>

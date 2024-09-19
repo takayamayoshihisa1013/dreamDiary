@@ -168,10 +168,9 @@ function View() {
                         <li>
                             <img src={zzz}></img>
                             <p className="navValue">夢を見る</p>
-
                         </li>
                     </Link>
-                    <Link to={"/"}>
+                    <Link to={"/profile"}>
                         <li>
                             <p className="navIcon"><i class="fa-solid fa-user"></i></p>
                             <p className="navValue">マイページ</p>
@@ -226,7 +225,6 @@ function View() {
                         <button type="submit"><i class="fa-regular fa-bookmark"></i></button>
                         <button type="submit"><i class="fa-solid fa-share-nodes"></i></button>
                     </form>
-
                 </div>
                 {post_data.map((post, index) => (
                     <div className="post">
@@ -234,7 +232,7 @@ function View() {
                             <div className="postUserIcon">
                                 <img src={testIcon}></img>
                             </div>
-                            <p className="username">{post.username}</p>
+                            <p className="username"><Link to={`/profile?postId=${post.postId}`}>{post.username}</Link></p>
                             <p className="postTime">{post.datetime}</p>
                         </div>
                         <div className="postBody">

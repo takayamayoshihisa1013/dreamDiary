@@ -20,6 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} /> {/* サインアップルート */}
         <Route path="/post" element={<Post />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
   );

@@ -112,6 +112,8 @@ def post_data():
         data_name["postId"] = data[7]
 
         data_name["likeCount"] = data[8]
+        
+        
 
         if "user_id" in session:
             if data[9] == 1:
@@ -509,6 +511,11 @@ def add_comment():
     except Exception as e:
         print(e)
         return jsonify({"success": False})
+
+@app.route("/user_post_data")
+def user_post_data():
+    
+    return jsonify({})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
