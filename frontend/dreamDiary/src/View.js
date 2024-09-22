@@ -170,7 +170,7 @@ function View() {
                             <p className="navValue">夢を見る</p>
                         </li>
                     </Link>
-                    <Link to={"/profile"}>
+                    <Link to={loginState === false ? "/login":`/profile?=${loginState}`}>
                         <li>
                             <p className="navIcon"><i class="fa-solid fa-user"></i></p>
                             <p className="navValue">マイページ</p>

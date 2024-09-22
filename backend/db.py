@@ -1,7 +1,7 @@
 import mysql.connector
 
 conn = mysql.connector.connect(
-    db = "dream_diary",
+    db="dream_diary",
     host="localhost",
     port=3306,
     user="root",
@@ -21,6 +21,25 @@ cur.execute("""
                 back_image VARCHAR(255) DEFAULT NULL
                 )
             """)
+
+cur.execute("""
+                CREATE TABLE IF NOT EXISTS post(
+                    id VARCHAR(36) PRIMARY KEY,
+                    user_id VARCHAR(36),
+                    post_name VARCHAR(255),
+                    post_text TEXT,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(user_id) REFERENCES user(id)
+                )
+                """)
+cur.execute("""
+                CREATE TABLE IF NOT EXISTS post_images(
+                    id VARCHAR(36) PRIMARY KEY,
+                    post_id VARCHAR(36),
+                    image_name VARCHAR(50),
+                    FOREIGN KEY(post_id) REFERENCES post(id)
+                )
+                """)
 
 
 cur.execute("""
@@ -56,4 +75,3 @@ cur.execute("""
             """)
 
 conn.commit()
-

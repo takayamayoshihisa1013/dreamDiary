@@ -33,7 +33,7 @@ def post_data():
     loginState = False
 
     if "user_id" in session:
-        loginState = True
+        loginState = session["user_id"]
         cur.execute("""
                     SELECT
                         post.post_name,
