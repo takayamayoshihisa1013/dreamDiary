@@ -20,7 +20,7 @@ function Follow() {
 
     const location = useLocation();
 
-
+    const [showList, setShowList] = useState(true);
 
 
 
@@ -47,28 +47,51 @@ function Follow() {
 
 
 
+
+
+
+
     return (
         <article className="followAndFollowerSection">
             <LeftNav />
 
             <section className="followAndFollowerList">
                 <div className="change">
-                    <button className="followListButton">フォロー</button>
-                    <button className="followerListButton">フォロワー</button>
+                    <button className="followListButton" onClick={() => setShowList(true)}>フォロー</button>
+                    <button className="followerListButton" onClick={() => setShowList(false)}>フォロワー</button>
                 </div>
                 <div className="followList">
+                    {showList ?
+                        followList.map((follow, index) => (
+                            <div className="follow">
+                                <a href={`http://localhost:3000/profile?id=${follow.userId}`}>
+                                    <div className="userIcon">
+                                        <img src={testIcon}></img>
+                                    </div>
+                                    <div className="nameId">
+                                        <p>{follow.name}</p>
+                                        <p>@{follow.userId}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        ))
+                        :
+                        followerList.map((follower, index) => (
+                            <div className="follow">
+                                <a href={`http://localhost:3000/profile?id=${follower.userId}`}>
+                                    <div className="userIcon">
+                                        <img src={testIcon}></img>
+                                    </div>
+                                    <div className="nameId">
+                                        <p>{follower.name}</p>
+                                        <p>@{follower.userId}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        ))
+                    }
 
-                    {followList.map((follow, index) => (
-                        <div className="follow">
-                            <div className="userIcon">
-                                <img src={testIcon}></img>
-                            </div>
-                            <div className="nameId">
-                                <p>{follow.name}</p>
-                                <p>@{follow.userId}</p>
-                            </div>
-                        </div>
-                    ))}
+
                 </div>
             </section>
             <RightNav />

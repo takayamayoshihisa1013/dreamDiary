@@ -193,12 +193,16 @@ function Profile() {
             credentials: "include",
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                setFollow(!follow);
-            }
-        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    setFollow(!follow);
+                    setProfile((prevProfile) => ({
+                        ...prevProfile,
+                        followerNum: follow ? profile.followerNum - 1 : prevProfile.followerNum + 1
+                    }))
+                }
+            })
     }
 
     return (
@@ -211,13 +215,15 @@ function Profile() {
                     </div>
                     <div className="profileIcon">
                         <img src={testIcon}></img>
-                        <button
-                            className="followButton"
-                            style={follow ? { "backgroundColor": "black" } : { "backgroundColor": "#FFFF" }}
-                            onClick={followSubmit}
-                        >
-                            フォローする
-                        </button>
+                        {loginState !== profile.id &&
+                            <button
+                                className="followButton"
+                                style={follow ? { "backgroundColor": "black" } : { "backgroundColor": "#FFFF" }}
+                                onClick={followSubmit}
+                            >
+                                フォローする
+                            </button>
+                        }
                     </div>
                     <h1 className="profileName">{profile.name}</h1>
                     <div className="followAndFollower">

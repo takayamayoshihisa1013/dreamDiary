@@ -27,7 +27,7 @@
     min-height: 90vh;
 }
 
-.followList .follow {
+.followList .follow a{
     width: 96%;
     border-top: 1px solid #d3d3d3;
     margin: 0 auto 0;
@@ -35,7 +35,11 @@
     /* height: ; */
     display: flex;
     justify-content: space-between;
+    color: inherit;
+    text-decoration: none;
 }
+
+
 
 .followList .follow .userIcon {
     width: 10%;
