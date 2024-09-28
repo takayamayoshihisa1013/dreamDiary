@@ -1,0 +1,162 @@
+.right  {
+    position: fixed;
+    right: 5vw;
+    top: 20vh;
+    right: 5vw;
+    z-index: 2;
+    background-color: #FFFF;
+}
+
+.right form {
+    width: 100%;
+}
+
+.right form input {
+    width: 96%;
+    display: block;
+    height: 3vh;
+    padding: 2%;
+    border-radius: 10px;
+}
+
+.rightNav {
+    width: 18vw;
+    border-radius: 10px;
+    border: 1px solid;
+    /* height: 58vh; */
+    margin-top: 5vh;
+    padding: 1vh 1vw;
+}
+
+.rightNav ul {
+    list-style: none;
+    width: 100%;
+}
+
+.rightNav ul a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.rightNav ul li {
+    display: flex;
+    height: 8vh;
+    width: 98%;
+    padding: 0 1%;
+    border-radius: 5px;
+}
+
+.rightNav ul li .navValue {
+    line-height: 8vh;
+    font-size: 2.3vmin;
+}
+
+.rightNav ul li:hover {
+    background-color: #dcdcdc;
+}
+
+.right .addPost {
+    width: 100%;
+    border-radius: 10px;
+    height: 6vh;
+    display: block;
+    margin-top: 5vh;
+    border: none;
+    background-color: #afeeee;
+    cursor: pointer;
+}
+
+.addPostForm {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    z-index: 1002!important;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.6);
+    /* display: none; */
+}
+
+.addPostForm .addPostFormDiv {
+    background-color: #FFFF;
+    width: 36%;
+    margin: 10vh 30%;
+    height: 76vh;
+    padding: 2vh 2%;
+    border-radius: 10px;
+    position: relative;
+}
+
+.addPostForm input {
+    display: block;
+    border-radius: 10px;
+    width:  98%;
+    margin: 0 auto;
+    height: 4vh;
+    padding: 1vh 1%;
+}
+
+.addPostForm p {
+    font-size: 2.5vmin;
+    line-height: 5vh;
+    height: 5vh;
+}
+
+.addPostForm .addPostFormDiv textarea {
+    width: 98%;
+    height: 50vh;
+    resize: none;
+    padding: 1vh 1%;
+    border-radius: 10px;
+    font-size: 2.3vmin;
+}
+
+.addPostForm .addPostFormDiv .buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.addPostForm .addPostFormDiv input[type="file"] {
+    display: none;
+}
+
+.addPostForm .addPostFormDiv .postImages {
+    width: 49%;
+    height: 6vh;
+    margin-top: 1vh;
+    border-radius: 10px;
+    background-color: #afeeee;
+    border: none;
+    display: block;
+    line-height: 6vh;
+    text-align: center;
+}
+
+.addPostForm .addPostFormDiv .buttons i {
+    margin-right: 0.3vw;
+}
+
+.addPostForm .addPostFormDiv .addPostSubmit {
+    width: 49%;
+    height: 6vh;
+    margin-top: 1vh;
+    border-radius: 10px;
+    background-color: #afeeee;
+    border: none;
+}
+
+.addPostForm .formClose {
+    position: absolute;
+    top: -4vh;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    width: 3vw;
+    height: 4vh;
+    font-size: 4vmin;
+    color: #FFFF;
+    text-align: center;
+    cursor: pointer;
+    z-index: 10000;
+}

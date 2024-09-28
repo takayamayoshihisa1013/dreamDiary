@@ -34,7 +34,15 @@ def post_data():
 
     if "user_id" in session:
         loginState = session["user_id"]
-        cur.execute("""
+        profileId = request.form.get("id")
+        print(profileId)
+        if profileId:
+            where = "WHERE user.id = %s"
+            params = (profileId,)
+        else:
+            where = ""
+            params = ()
+        cur.execute(f"""
                     SELECT
                         post.post_name,
                         post.post_text,
@@ -70,9 +78,10 @@ def post_data():
                     LEFT JOIN post_images ON post.id = post_images.post_id
                     LEFT JOIN postLike ON post.id = postLike.post_id
                     LEFT JOIN bookmark ON post.id = bookmark.post_id
+                    {where}
                     GROUP BY post.id
                     ORDER BY post.created_at DESC
-                    """, (session["user_id"], session["user_id"]))
+                    """,(session["user_id"], session["user_id"]) + params)
 
     else:
         cur.execute("""
@@ -108,12 +117,13 @@ def post_data():
         data_name["userId"] = data[3]
         data_name["username"] = data[4]
         data_name["userIcon"] = data[5]
-        data_name["postImages"] = data[6].split(",")
+        if data[6]:
+            data_name["postImages"] = data[6].split(",")
+        else:
+            data_name["postImages"] = []
         data_name["postId"] = data[7]
 
         data_name["likeCount"] = data[8]
-        
-        
 
         if "user_id" in session:
             if data[9] == 1:
@@ -129,7 +139,7 @@ def post_data():
 
         data_list.append(data_name)
 
-        print(data_list)
+        # print(data_list)
 
     return jsonify({"success": True, "post_data": data_list, "loginState": loginState})
 
@@ -155,7 +165,7 @@ def signup():
                 back_image VARCHAR(255) DEFAULT NULL
                 )
             """)
-    
+
     try:
         cur.execute("""
                     SELECT *
@@ -328,6 +338,7 @@ def heart():
         print(e)
         return jsonify({})
 
+
 @app.route("/bookmark", methods=["POST"])
 def bookmark():
 
@@ -481,17 +492,18 @@ def post():
                     """, (postId,))
 
     commentData = cur.fetchall()
-    
+
     commentList = []
-    
+
     for data in commentData:
         comment = {}
         comment["userId"] = data[0]
         comment["comment"] = data[1]
         comment["time"] = data[2].strftime("%Y/%m/%d %H:%M")
         commentList.append(comment)
-    
-    return jsonify({"success": True, "post_data": data_list, "loginState": loginState, "commentList":commentList})
+
+    return jsonify({"success": True, "post_data": data_list, "loginState": loginState, "commentList": commentList})
+
 
 @app.route("/add_comment", methods=["POST"])
 def add_comment():
@@ -512,10 +524,128 @@ def add_comment():
         print(e)
         return jsonify({"success": False})
 
-@app.route("/user_post_data")
+
+@app.route("/profile", methods=["POST"])
 def user_post_data():
+    conn = mysql_conn()
+    cur = conn.cursor()
+    profileId = request.form.get("id")
+    print(profileId)
+    if profileId:
+
+        cur.execute("""
+                        SELECT user.id,user.name,user.profile_text,user.icon,user.back_image,COUNT(follow.user_id),COUNT(follower.follow_id)
+                        FROM user
+                        LEFT JOIN follow as follow ON follow.user_id = user.id
+                        LEFT JOIN follow as follower ON follower.follow_id = user.id
+                        WHERE user.id = %s
+                        GROUP BY user.id
+                        """, (profileId,))
+
+        profileData = cur.fetchone()
+        print(profileData)
+        profile = {}
+        profile["id"] = profileData[0]
+        profile["name"] = profileData[1]
+        profile["profileText"] = profileData[2]
+        profile["icon"] = profileData[3]
+        profile["backImage"] = profileData[4]
+        profile["followNum"] = profileData[5]
+        profile["followerNum"] = profileData[6]
+        
+        
+        
+        cur.execute("""
+                    SELECT *
+                    FROM follow
+                    WHERE user_id = %s AND follow_id = %s
+                    """, (session["user_id"], profileId))
+        
+        followExist = cur.fetchone()
+        
+        print(followExist, "follow")
+        if followExist:
+            follow = True
+        else:
+            follow = False
+        
+        print(follow, "followww")
+        
+    return jsonify({"profile":profile, "follow": follow})
+
+@app.route("/followList", methods=["POST"])
+def followList():
+    conn = mysql_conn()
+    cur = conn.cursor()
+    cur.execute("""
+                SELECT follow.follow_id, user.name
+                FROM follow
+                JOIN user ON user.id = follow.follow_id
+                WHERE user_id = %s
+                """, (session["user_id"],))
     
-    return jsonify({})
+    followDataList = cur.fetchall()
+    
+    followData = []
+    for data in followDataList:
+        follow = {}
+        follow["userId"] = data[0]
+        follow["name"] = data[1]
+        followData.append(follow)
+    
+    cur.execute("""
+                SELECT follow.user_id, user.name
+                FROM follow
+                JOIN user ON user.id = follow.user_id
+                WHERE follow_id = %s
+                """, (session["user_id"],))
+    
+    followerDataList = cur.fetchall()
+    
+    followerData = []
+    for data in followerDataList:
+        follower = {}
+        follower["userId"] = data[0]
+        follower["name"] = data[1]
+        followerData.append(follower)
+    
+    
+    
+    
+    return jsonify({"follow": followData, "follower": followerData})
+
+@app.route("/follow", methods=["POST"])
+def follow():
+    profileId = request.form.get("userId")
+    print(profileId, "followaaaaaaaaaaa")
+    conn = mysql_conn()
+    cur = conn.cursor()
+    
+    cur.execute("""
+                SELECT *
+                FROM follow
+                WHERE user_id = %s AND follow_id = %s
+                """, (session["user_id"], profileId))
+    
+    followExist = cur.fetchone()
+    print(followExist, "exist")
+    try:
+        if followExist:
+            cur.execute("""
+                        DELETE FROM follow
+                            WHERE user_id = %s AND follow_id = %s
+                        """, (session["user_id"], profileId))
+        else:
+            followUuid = str(uuid.uuid4())
+            cur.execute("INSERT INTO follow(id,user_id,follow_id) VALUES(%s,%s,%s)",
+                        (followUuid, session["user_id"], profileId))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({"success": True})
+    except:
+        return jsonify({"success": False})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

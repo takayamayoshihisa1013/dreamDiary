@@ -1,0 +1,56 @@
+.leftNav {
+    width: 18vw;
+    border-radius: 10px;
+    border: 1px solid;
+    /* height: 58vh; */
+    position: fixed;
+    top: 20vh;
+    padding: 1%;
+    left: 5vw;
+}
+
+.leftNav ul {
+    list-style: none;
+    width: 100%;
+}
+
+.leftNav ul li {
+    display: flex;
+    height: 8vh;
+    width: 98%;
+    padding: 0 1%;
+    border-radius: 5px;
+}
+
+.leftNav ul li:hover {
+    background-color: #dcdcdc;
+}
+
+nav ul li .navIcon {
+    width: 3vw;
+    height: 5vh;
+    margin-top: 1.5vh;
+    font-size: 3vmin;
+    text-align: center;
+    line-height: 5vh;
+}
+
+nav ul li .navValue {
+    line-height: 8vh;
+    font-size: 2.3vmin;
+    margin-left: 0.2vw;
+}
+
+.leftNav ul a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.leftNav ul li img {
+    width: 3vw;
+    display: block;
+    object-fit: contain;
+    height: 5vh;
+    margin-top: 1.5vh;
+}

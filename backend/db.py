@@ -74,4 +74,14 @@ cur.execute("""
             )
             """)
 
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS follow(
+                id VARCHAR(36) PRIMARY KEY,
+                user_id VARCHAR(36),
+                follow_id VARCHAR(36),
+                FOREIGN KEY(follow_id) REFERENCES user(id),
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            )
+            """)
+
 conn.commit()

@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useLocation } from 'react-router-dom';
 import "./Post.css";
+import config from"./config/config";
 
 
 function Post() {
@@ -47,7 +48,7 @@ function Post() {
         const postData = new FormData();
         postData.append("postId", postId)
 
-        fetch("http://localhost:5000/post", {
+        fetch(`${config.apiurl}/post`, {
             method: "POST",
             credentials: "include",
             body: postData

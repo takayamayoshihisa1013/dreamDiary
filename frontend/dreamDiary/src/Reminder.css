@@ -1,0 +1,65 @@
+
+
+.followAndFollower {
+    /* min-height: 90vh; */
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+}
+
+.change {
+    width: 40vw;
+    height: 5vh;
+    margin-top: 5vh;
+}
+
+.followAndFollowerList {
+    margin-left: 30%;
+    width: 40vw;
+    margin-top: 10vh;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    /* border: 1px solid; */
+    min-height: 90vh;
+}
+
+.followList .follow {
+    width: 96%;
+    border-top: 1px solid #d3d3d3;
+    margin: 0 auto 0;
+    padding: 2%;
+    height: 5vh;
+    display: flex;
+    justify-content: space-between;
+}
+
+.followList .follow .reminderType {
+    width: 10%;
+    height: 100%;
+    line-height: 5vh;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+
+
+.followList .follow .reminderText {
+    font-size: 0.9em;
+    width: 89%;
+    line-height: 5vh;
+    font-weight: 600;
+}
+
+
+
+
+
+
+
+
+
+
+

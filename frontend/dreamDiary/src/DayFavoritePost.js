@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import "./View.css";
 import LeftNav from "./LeftNav";
 import RightNav from "./RightNav";
 import { Link } from 'react-router-dom';
-import testIcon from "./images/userIcon/mikakunintouhikousyoujo.jpg";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from 'react-router-dom';
-import config from"./config/config";
+import testIcon from "./images/userIcon/mikakunintouhikousyoujo.jpg";
 
-function View() {
-
+function DayFavoritePost() {
     const [postName, setPostName] = useState("");
     const [postText, setPostText] = useState("");
     const [postImages, setPostImages] = useState([]);
@@ -35,7 +33,7 @@ function View() {
     useEffect(() => {
         const formData = new FormData();
         formData.append("page", "top")
-        fetch(`${config.apiurl}/post_data`, {
+        fetch("http://localhost:5000/post_data", {
             method: "POST",
             credentials: "include",
             body:formData
@@ -164,7 +162,6 @@ function View() {
             console.log(data);
         })
     }
-
     return (
         <article className="view">
             <LeftNav />
@@ -232,8 +229,7 @@ function View() {
             <RightNav />
 
         </article>
-
     )
 }
 
-export default View;
+export default DayFavoritePost;

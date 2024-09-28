@@ -6,6 +6,8 @@ import Login from "./Login";
 import Signup from "./Signup"; // サインアップページを想定
 import Post from "./Post";
 import Profile from "./Profile";
+import Follow from "./Follow";
+import DayFavoritePost from "./DayFavoritePost";
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
         <Route path="/signup" element={<Signup />} /> {/* サインアップルート */}
         <Route path="/post" element={<Post />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/followAndFollower" element={<Follow />} />
+        <Route path="/dayFavoritePost" element={<DayFavoritePost />} />
       </Routes>
     </div>
   );
