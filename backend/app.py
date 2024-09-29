@@ -81,7 +81,7 @@ def post_data():
                     {where}
                     GROUP BY post.id
                     ORDER BY post.created_at DESC
-                    """,(session["user_id"], session["user_id"]) + params)
+                    """, (session["user_id"], session["user_id"]) + params)
 
     else:
         cur.execute("""
@@ -320,6 +320,14 @@ def heart():
 
         existCheck = cur.fetchone()
 
+        cur.execute("""
+                    SELECT user_id
+                    FROM post
+                    WHERE id = %s
+                    """, (postId,))
+
+        receiveId = cur.fetchone()[0]
+
         if existCheck:
             # いいねが押されていた場合の処理
             print(existCheck)
@@ -327,16 +335,30 @@ def heart():
                         DELETE FROM postLike
                         WHERE post_id = %s AND user_id = %s
                         """, (postId, session["user_id"]))
+
+            # 通知テーブル削除処理
+            cur.execute("""
+                        DELETE FROM reminder
+                        WHERE send_id = %s AND receive_id = %s AND post_id = %s AND type = 'favorite'
+                        """, (session["user_id"], receiveId, postId))
+
         else:
             postLikeUuid = str(uuid.uuid4())
             cur.execute("INSERT INTO postLike(id,post_id,user_id) VALUES(%s,%s,%s)",
                         (postLikeUuid, postId, session["user_id"]))
+
+            # 通知テーブル追加処理
+            if receiveId != session["user_id"]:
+                reminderUuid = str(uuid.uuid4())
+                cur.execute("INSERT INTO reminder(id,send_id,receive_id,post_id,type) VALUES(%s,%s,%s,%s,'favorite')",
+                            (reminderUuid, session["user_id"], receiveId, postId))
+
         conn.commit()
         conn.close()
-        return jsonify({})
+        return jsonify({"success": True})
     except Exception as e:
         print(e)
-        return jsonify({})
+        return jsonify({"success": False})
 
 
 @app.route("/bookmark", methods=["POST"])
@@ -463,7 +485,11 @@ def post():
         data_name["userId"] = data[3]
         data_name["username"] = data[4]
         data_name["userIcon"] = data[5]
-        data_name["postImages"] = data[6].split(",")
+
+        if data[6]:
+            data_name["postImages"] = data[6].split(",")
+        else:
+            data_name["postImages"] = []
         data_name["postId"] = data[7]
 
         data_name["likeCount"] = data[8]
@@ -513,12 +539,27 @@ def add_comment():
     print(commentText)
     conn = mysql_conn()
     cur = conn.cursor()
+
+    cur.execute("""
+                    SELECT user_id
+                    FROM post
+                    WHERE id = %s
+                    """, (postId,))
+
+    receiveId = cur.fetchone()[0]
+
     try:
         commentUuid = str(uuid.uuid4())
         cur.execute("INSERT INTO comment(id,post_id,user_id,comment_text) VALUES(%s,%s,%s,%s)",
                     (commentUuid, postId, session["user_id"], commentText))
-        conn.commit()
-        conn.close()
+
+        if receiveId != session["user_id"]:
+            # 通知追加
+            reminderUuid = str(uuid.uuid4())
+            cur.execute("INSERT INTO reminder(id,send_id,receive_id,post_id,type) VALUES(%s,%s,%s,%s,'comment')",
+                        (reminderUuid,session["user_id"],receiveId,postId))
+            conn.commit()
+            conn.close()
         return jsonify({"success": True})
     except Exception as e:
         print(e)
@@ -552,26 +593,25 @@ def user_post_data():
         profile["backImage"] = profileData[4]
         profile["followNum"] = profileData[5]
         profile["followerNum"] = profileData[6]
-        
-        
-        
+
         cur.execute("""
                     SELECT *
                     FROM follow
                     WHERE user_id = %s AND follow_id = %s
                     """, (session["user_id"], profileId))
-        
+
         followExist = cur.fetchone()
-        
+
         print(followExist, "follow")
         if followExist:
             follow = True
         else:
             follow = False
-        
-        print(follow, "followww")
-        
-    return jsonify({"profile":profile, "follow": follow})
+
+        print(follow, "follow")
+
+    return jsonify({"profile": profile, "follow": follow})
+
 
 @app.route("/followList", methods=["POST"])
 def followList():
@@ -583,69 +623,106 @@ def followList():
                 JOIN user ON user.id = follow.follow_id
                 WHERE user_id = %s
                 """, (session["user_id"],))
-    
+
     followDataList = cur.fetchall()
-    
+
     followData = []
     for data in followDataList:
         follow = {}
         follow["userId"] = data[0]
         follow["name"] = data[1]
         followData.append(follow)
-    
+
     cur.execute("""
                 SELECT follow.user_id, user.name
                 FROM follow
                 JOIN user ON user.id = follow.user_id
                 WHERE follow_id = %s
                 """, (session["user_id"],))
-    
+
     followerDataList = cur.fetchall()
-    
+
     followerData = []
     for data in followerDataList:
         follower = {}
         follower["userId"] = data[0]
         follower["name"] = data[1]
         followerData.append(follower)
-    
-    
-    
-    
+
     return jsonify({"follow": followData, "follower": followerData})
+
 
 @app.route("/follow", methods=["POST"])
 def follow():
     profileId = request.form.get("userId")
-    print(profileId, "followaaaaaaaaaaa")
+    print(profileId, "follow")
     conn = mysql_conn()
     cur = conn.cursor()
-    
+
     cur.execute("""
                 SELECT *
                 FROM follow
                 WHERE user_id = %s AND follow_id = %s
                 """, (session["user_id"], profileId))
-    
+
     followExist = cur.fetchone()
     print(followExist, "exist")
+    
     try:
         if followExist:
             cur.execute("""
                         DELETE FROM follow
-                            WHERE user_id = %s AND follow_id = %s
+                        WHERE user_id = %s AND follow_id = %s
+                        """, (session["user_id"], profileId))
+            
+            cur.execute("""
+                        DELETE FROM reminder
+                        WHERE send_id = %s AND receive_id = %s AND type = 'follow'
                         """, (session["user_id"], profileId))
         else:
             followUuid = str(uuid.uuid4())
             cur.execute("INSERT INTO follow(id,user_id,follow_id) VALUES(%s,%s,%s)",
                         (followUuid, session["user_id"], profileId))
-        
+            
+            reminderUuid = str(uuid.uuid4())
+            cur.execute("INSERT INTO reminder(id,send_id,receive_id,type) VALUES(%s,%s,%s,'follow')",
+                        (reminderUuid,session["user_id"],profileId))
+
         conn.commit()
         conn.close()
-        
+
         return jsonify({"success": True})
     except:
         return jsonify({"success": False})
+
+
+@app.route("/reminder", methods=["POST"])
+def reminder():
+    try:
+        conn = mysql_conn()
+        cur = conn.cursor()
+        cur.execute("""
+                    SELECT user.name, reminder.post_id, type
+                    FROM reminder
+                    JOIN user ON user.id = reminder.send_id
+                    WHERE receive_id = %s
+                    ORDER BY created_at desc
+                    """, (session["user_id"],))
+
+        reminderDataList = cur.fetchall()
+        print(reminderDataList)
+        reminderList = []
+        for reminder in reminderDataList:
+            reminders = {}
+            reminders["userName"] = reminder[0]
+            reminders["postId"] = reminder[1]
+            reminders["type"] = reminder[2]
+            reminderList.append(reminders)
+
+        return jsonify({"success": True, "reminderData": reminderList})
+    except:
+        return jsonify({"success": False})
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

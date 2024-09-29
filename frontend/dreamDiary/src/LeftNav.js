@@ -49,7 +49,7 @@ function LeftNav() {
 
                     </li>
                 </Link>
-                <Link to={"/"}>
+                <Link to={"/reminder"}>
                     <li>
                         <p className="navIcon"><i class="fa-solid fa-bell"></i></p>
 

@@ -8,7 +8,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from 'react-router-dom';
-import config from"./config/config";
+import config from "./config/config";
 
 function View() {
 
@@ -29,7 +29,7 @@ function View() {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        arrows:false
+        arrows: false
     };
 
     useEffect(() => {
@@ -38,7 +38,7 @@ function View() {
         fetch(`${config.apiurl}/post_data`, {
             method: "POST",
             credentials: "include",
-            body:formData
+            body: formData
         })
             .then(response => response.json())
             .then(data => {
@@ -76,7 +76,7 @@ function View() {
                     alert("送信中に問題が発生しました");
                 }
             }
-        )
+            )
     }
 
     // ポストフォーム
@@ -90,37 +90,41 @@ function View() {
     const heartButton = (e, postId) => {
         e.preventDefault();
 
-        if(loginState === false) {
+        if (loginState === false) {
             window.location.href = "/login"
         }
 
         var postId = e.currentTarget.value;
         console.log("like", postId);
 
-        // 反転処理
-        setPostData(prevData =>
-            prevData.map(post => 
-                post.postId === postId ? 
-                { ...post, 
-                    favorite: !post.favorite ,
-                    likeCount: post.favorite ? post.likeCount - 1 : post.likeCount + 1
-                }
-                : post
-            )
-        );
+
 
         const likeData = new FormData();
         likeData.append("postId", postId);
 
         fetch("http://localhost:5000/like", {
-            method:"POST",
+            method: "POST",
             credentials: "include",
             body: likeData,
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.success) {
+                    // 反転処理
+                    setPostData(prevData =>
+                        prevData.map(post =>
+                            post.postId === postId ?
+                                {
+                                    ...post,
+                                    favorite: !post.favorite,
+                                    likeCount: post.favorite ? post.likeCount - 1 : post.likeCount + 1
+                                }
+                                : post
+                        )
+                    );
+                }
+            })
     }
 
     const postPage = (e, postId) => {
@@ -132,19 +136,19 @@ function View() {
     const bookMarkButton = (e, postId) => {
         e.preventDefault();
 
-        if(loginState === false) {
+        if (loginState === false) {
             window.location.href = "/login"
         }
         var bookMark = e.currentTarget.value;
 
-        setPostData(prevData => 
-            prevData.map(post => 
+        setPostData(prevData =>
+            prevData.map(post =>
                 post.postId === postId ?
-                {
-                    ...post, 
-                    bookmark: !post.bookmark
-                }
-                : post
+                    {
+                        ...post,
+                        bookmark: !post.bookmark
+                    }
+                    : post
             )
         );
 
@@ -152,17 +156,17 @@ function View() {
         bookMarkForm.append("bookmark", bookMark)
         console.log(bookMark);
 
-        
+
 
         fetch("http://localhost:5000/bookmark", {
-            method:"POST",
+            method: "POST",
             credentials: "include",
             body: bookMarkForm,
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
     }
 
     return (
@@ -210,7 +214,7 @@ function View() {
                         </div>
                         <form className="postFooter">
                             <button type="submit" onClick={(e) => heartButton(e, post.postId)} value={post.postId} className="favoriteButton">
-                                <p>{post.favorite === true 
+                                <p>{post.favorite === true
                                     ? <i class="fa-solid fa-heart"></i>
                                     : <i class="fa-regular fa-heart"></i>
                                 }</p>
@@ -219,8 +223,8 @@ function View() {
                             <button type="submit" onClick={(e) => postPage(e, post.postId)}><i class="fa-regular fa-comment"></i></button>
                             <button type="submit" onClick={(e) => bookMarkButton(e, post.postId)} value={post.postId} className="bookmark">
                                 {post.bookmark === true
-                                    ?<i class="fa-solid fa-bookmark"></i>
-                                    :<i class="fa-regular fa-bookmark"></i>
+                                    ? <i class="fa-solid fa-bookmark"></i>
+                                    : <i class="fa-regular fa-bookmark"></i>
                                 }
                             </button>
                             <button type="submit"><i class="fa-solid fa-share-nodes"></i></button>

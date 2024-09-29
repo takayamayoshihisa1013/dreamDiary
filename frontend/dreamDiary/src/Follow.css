@@ -17,6 +17,13 @@
     margin-top: 5vh;
 }
 
+.change button {
+    width: 50%;
+    height: 5vh;
+    border-radius: 10px 10px 0px 0px;
+    border: none;
+}
+
 .followAndFollowerList {
     margin-left: 30%;
     width: 40vw;

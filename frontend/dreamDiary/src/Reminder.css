@@ -1,6 +1,6 @@
 
 
-.followAndFollower {
+.reminder {
     /* min-height: 90vh; */
     width: 100%;
     background-repeat: no-repeat;
@@ -10,33 +10,31 @@
     display: flex;
 }
 
-.change {
-    width: 40vw;
-    height: 5vh;
-    margin-top: 5vh;
-}
-
-.followAndFollowerList {
+.reminderListSection {
     margin-left: 30%;
     width: 40vw;
     margin-top: 10vh;
     border-left: 1px solid;
     border-right: 1px solid;
     /* border: 1px solid; */
-    min-height: 90vh;
+    min-height: 80vh;
+    padding-top: 10vh;
+    border-right:1px solid #a9a9a9;
+    border-left:1px solid #a9a9a9;
 }
 
-.followList .follow {
+.reminderListSection .reminders {
     width: 96%;
     border-top: 1px solid #d3d3d3;
     margin: 0 auto 0;
     padding: 2%;
     height: 5vh;
     display: flex;
-    justify-content: space-between;
+    line-height: 5vh;
+    /* justify-content: space-between; */
 }
 
-.followList .follow .reminderType {
+.reminderList .reminders .reminderType {
     width: 10%;
     height: 100%;
     line-height: 5vh;

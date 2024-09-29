@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { useLocation } from 'react-router-dom';
 import "./Post.css";
 import config from"./config/config";
+import LeftNav from "./LeftNav";
 
 
 function Post() {
@@ -187,52 +188,7 @@ function Post() {
 
     return (
         <article className="view">
-            <nav className="leftNav">
-                <ul>
-                    <Link to={"/"}>
-                        <li>
-                            <img src={zzz}></img>
-                            <p className="navValue">夢を見る</p>
-
-                        </li>
-                    </Link>
-                    <Link to={"/profile"}>
-                        <li>
-                            <p className="navIcon"><i class="fa-solid fa-user"></i></p>
-                            <p className="navValue">マイページ</p>
-                        </li>
-                    </Link>
-                    <Link to={"/"}>
-                        <li>
-                            <p className="navIcon"><i class="fa-solid fa-users"></i></p>
-                            <p className="navValue">フォロー・フォロワー</p>
-                        </li>
-                    </Link>
-                    <Link to={"/"}>
-                        <li>
-                            <p className="navIcon"><i class="fa-solid fa-bookmark"></i></p>
-                            <p className="navValue">お気に入り</p>
-
-                        </li>
-                    </Link>
-                    <Link to={"/"}>
-                        <li>
-                            <p className="navIcon"><i class="fa-solid fa-bell"></i></p>
-
-                            <p className="navValue">通知</p>
-
-                        </li>
-                    </Link>
-                    <Link to={"/"}>
-                        <li>
-                            <p className="navIcon"><i class="fa-solid fa-gear"></i></p>
-
-                            <p className="navValue">設定</p>
-
-                        </li>
-                    </Link>
-                </ul>
-            </nav>
+            <LeftNav />
             <section className="postList">
                 {post_data.map((post, index) => (
                     <div className="post">

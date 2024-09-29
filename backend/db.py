@@ -84,4 +84,20 @@ cur.execute("""
             )
             """)
 
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS reminder(
+                id VARCHAR(36) PRIMARY KEY,
+                send_id VARCHAR(36),
+                receive_id VARCHAR(36),
+                post_id VARCHAR(36),
+                type CHAR(10),
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(send_id) REFERENCES user(id),
+                FOREIGN KEY(receive_id) REFERENCES user(id),
+                FOREIGN KEY(post_id) REFERENCES post(id)
+            )
+            """)
+
+
+
 conn.commit()
