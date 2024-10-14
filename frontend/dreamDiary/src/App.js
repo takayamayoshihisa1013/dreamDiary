@@ -10,6 +10,7 @@ import Follow from "./Follow";
 import Reminder from "./Reminder";
 import DayFavoritePost from "./DayFavoritePost";
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import Favorite from "./Favorite";
 
 function App() {
   const location = useLocation();
@@ -27,6 +28,7 @@ function App() {
         <Route path="/followAndFollower" element={<Follow />} />
         <Route path="/dayFavoritePost" element={<DayFavoritePost />} />
         <Route path="/reminder" element={<Reminder />} />
+        <Route path="/favorite" element={<Favorite />} />
       </Routes>
     </div>
   );

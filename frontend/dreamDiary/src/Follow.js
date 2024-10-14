@@ -28,6 +28,7 @@ function Follow() {
 
 
     useEffect(() => {
+        
         const param = new URLSearchParams(location.search);
         const formData = new FormData();
         formData.append("userId", param)

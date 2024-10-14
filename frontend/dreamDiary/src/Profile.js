@@ -44,7 +44,7 @@ function Profile() {
         const params = new URLSearchParams(location.search);
         console.log(location.search);
         const formData = new FormData();
-        formData.append("id", params.get("id"));
+        formData.append("profile", params.get("id"));
         fetch("http://localhost:5000/post_data", {
             method: "POST",
             credentials: "include",

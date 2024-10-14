@@ -98,6 +98,16 @@ cur.execute("""
             )
             """)
 
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS today_postlike_count(
+                id VARCHAR(36) PRIMARY KEY,
+                post_id VARCHAR(36),
+                count INT DEFAULT 0,
+                date DATE DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES post(id),
+                UNIQUE(post_id, date)
+            )
+            """)
 
 
 conn.commit()

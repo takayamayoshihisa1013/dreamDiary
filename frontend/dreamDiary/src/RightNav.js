@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import "./RightNav.css";
 
@@ -7,11 +7,14 @@ function RightNav() {
     const [postName, setPostName] = useState("");
     const [postText, setPostText] = useState("");
     const [postImages, setPostImages] = useState([]);
+    const [loginState, setLoginState] = useState("");
 
     // フォームの表示・非表示を切り替える関数
     const toggleForm = () => {
         setIsFormButton(!isFormButton);
     };
+
+    
 
     // フォームの送信ハンドラー
     const handleSubmit = (e) => {
@@ -48,18 +51,18 @@ function RightNav() {
     return (
         <>
         <div className="right">
-            <form onSubmit={""}>
+            <form onSubmit={"/"}>
                 <input placeholder="夢を見つける"></input>
             </form>
             <nav className="rightNav">
                 <ul>
-                    <Link to={"/"}>
+                    <Link to={"/?filter=today"}>
                         <li>
                             <p className="navIcon"><i className="fa-solid fa-heart"></i></p>
                             <p className="navValue">本日の人気夢</p>
                         </li>
                     </Link>
-                    <Link to={"/"}>
+                    <Link to={"/?filter=surge"}>
                         <li>
                             <p className="navIcon"><i className="fa-solid fa-arrow-trend-up"></i></p>
                             <p className="navValue">急上昇</p>

@@ -1,26 +1,16 @@
 import React, { useState, useEffect } from "react";
-import "./View.css";
 import LeftNav from "./LeftNav";
 import RightNav from "./RightNav";
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 import testIcon from "./images/userIcon/mikakunintouhikousyoujo.jpg";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useNavigate } from 'react-router-dom';
 import config from "./config/config";
 
-function View() {
 
-
-    const [post_data, setPostData] = useState([]);
-
-    const [loginState, setLoginState] = useState("");
-
-
-
-    const location = useLocation();
-
+function Favorite() {
 
     // スライダーの設定
     const settings = {
@@ -32,22 +22,21 @@ function View() {
         arrows: false
     };
 
+    const [postName, setPostName] = useState("");
+    const [postText, setPostText] = useState("");
+    const [postImages, setPostImages] = useState([]);
+
+    const [post_data, setPostData] = useState([]);
+
+    const [loginState, setLoginState] = useState("");
+
     useEffect(() => {
-        const param = new URLSearchParams(location.search);
-        // パラメータによってアクセスするURL先を変える
-        let url = "post_data";
-        if (param.get("filter") === "today") {
-            url = "filterToday"
-        }
-        else if (param.get("filter") === "surge") {
-            url = "filterSurge"
-        }
-        else {
-            url = "post_data"
-        }
-        fetch(`${config.apiurl}/${url}`, {
+        const formData = new FormData();
+        formData.append("page", "top")
+        fetch(`${config.apiurl}/favorite`, {
             method: "POST",
             credentials: "include",
+            body: formData
         })
             .then(response => response.json())
             .then(data => {
@@ -55,9 +44,7 @@ function View() {
                 setPostData(data.post_data);
                 setLoginState(data.loginState);
             })
-    }, [location.search])
-
-    
+    }, [])
 
     // いいね機能
     const heartButton = (e, postId) => {
@@ -100,11 +87,6 @@ function View() {
             })
     }
 
-    const postPage = (e, postId) => {
-        e.preventDefault();
-        window.location.href = `http://localhost:3000/post?postId=${postId}`;
-    }
-
     // ブックマーク
     const bookMarkButton = (e, postId) => {
         e.preventDefault();
@@ -140,6 +122,11 @@ function View() {
             .then(data => {
                 console.log(data);
             })
+    }
+
+    const postPage = (e, postId) => {
+        e.preventDefault();
+        window.location.href = `http://localhost:3000/post?postId=${postId}`;
     }
 
     return (
@@ -209,8 +196,7 @@ function View() {
             <RightNav />
 
         </article>
-
     )
 }
 
-export default View;
+export default Favorite;

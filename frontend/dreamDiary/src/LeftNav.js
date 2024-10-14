@@ -35,21 +35,21 @@ function LeftNav() {
                         <p className="navValue">マイページ</p>
                     </li>
                 </Link>
-                <Link to={`/followAndFollower?id=${loginState}`}>
+                <Link to={loginState === false ? "/login" : `/followAndFollower?id=${loginState}`}>
                     <li>
                         <p className="navIcon"><i class="fa-solid fa-users"></i></p>
                         <p className="navValue">フォロー・フォロワー</p>
 
                     </li>
                 </Link>
-                <Link to={"/"}>
+                <Link to={"/favorite"}>
                     <li>
                         <p className="navIcon"><i class="fa-solid fa-bookmark"></i></p>
                         <p className="navValue">お気に入り</p>
 
                     </li>
                 </Link>
-                <Link to={"/reminder"}>
+                <Link to={loginState === false ? "/login" : "/reminder"}>
                     <li>
                         <p className="navIcon"><i class="fa-solid fa-bell"></i></p>
 

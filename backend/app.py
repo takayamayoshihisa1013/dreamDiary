@@ -34,7 +34,7 @@ def post_data():
 
     if "user_id" in session:
         loginState = session["user_id"]
-        profileId = request.form.get("id")
+        profileId = request.form.get("profile")
         print(profileId)
         if profileId:
             where = "WHERE user.id = %s"
@@ -336,6 +336,12 @@ def heart():
                         WHERE post_id = %s AND user_id = %s
                         """, (postId, session["user_id"]))
 
+            cur.execute("""
+                        UPDATE today_postlike_count
+                        SET count = GREATEST(count - 1, 0)
+                        WHERE date = DATE(NOW()) AND post_id = %s
+                        """, (postId,))
+
             # 通知テーブル削除処理
             cur.execute("""
                         DELETE FROM reminder
@@ -343,9 +349,17 @@ def heart():
                         """, (session["user_id"], receiveId, postId))
 
         else:
+            # いいねを消したときの処理
             postLikeUuid = str(uuid.uuid4())
             cur.execute("INSERT INTO postLike(id,post_id,user_id) VALUES(%s,%s,%s)",
                         (postLikeUuid, postId, session["user_id"]))
+
+            # 本日のいいね順にするテーブルに追加する処理
+            todayPostLikeUuid = str(uuid.uuid4())
+            cur.execute("""
+                        INSERT INTO today_postlike_count(id, post_id, count) VALUES(%s,%s,%s)
+                        ON DUPLICATE KEY UPDATE count  = count + 1
+                        """, (todayPostLikeUuid, postId, 1))
 
             # 通知テーブル追加処理
             if receiveId != session["user_id"]:
@@ -557,7 +571,7 @@ def add_comment():
             # 通知追加
             reminderUuid = str(uuid.uuid4())
             cur.execute("INSERT INTO reminder(id,send_id,receive_id,post_id,type) VALUES(%s,%s,%s,%s,'comment')",
-                        (reminderUuid,session["user_id"],receiveId,postId))
+                        (reminderUuid, session["user_id"], receiveId, postId))
             conn.commit()
             conn.close()
         return jsonify({"success": True})
@@ -570,7 +584,7 @@ def add_comment():
 def user_post_data():
     conn = mysql_conn()
     cur = conn.cursor()
-    profileId = request.form.get("id")
+    profileId = request.form.get("profile")
     print(profileId)
     if profileId:
 
@@ -667,14 +681,14 @@ def follow():
 
     followExist = cur.fetchone()
     print(followExist, "exist")
-    
+
     try:
         if followExist:
             cur.execute("""
                         DELETE FROM follow
                         WHERE user_id = %s AND follow_id = %s
                         """, (session["user_id"], profileId))
-            
+
             cur.execute("""
                         DELETE FROM reminder
                         WHERE send_id = %s AND receive_id = %s AND type = 'follow'
@@ -683,10 +697,10 @@ def follow():
             followUuid = str(uuid.uuid4())
             cur.execute("INSERT INTO follow(id,user_id,follow_id) VALUES(%s,%s,%s)",
                         (followUuid, session["user_id"], profileId))
-            
+
             reminderUuid = str(uuid.uuid4())
             cur.execute("INSERT INTO reminder(id,send_id,receive_id,type) VALUES(%s,%s,%s,'follow')",
-                        (reminderUuid,session["user_id"],profileId))
+                        (reminderUuid, session["user_id"], profileId))
 
         conn.commit()
         conn.close()
@@ -722,6 +736,345 @@ def reminder():
         return jsonify({"success": True, "reminderData": reminderList})
     except:
         return jsonify({"success": False})
+
+
+@app.route("/favorite", methods=["POST"])
+def favorite():
+    postId = request.form.get("page")
+    loginState = False
+
+    if "user_id" in session:
+        loginState = True
+        conn = mysql_conn()
+        cur = conn.cursor()
+        cur.execute(f"""
+                        SELECT
+                            post.post_name,
+                            post.post_text,
+                            post.created_at,
+                            user.id,
+                            user.name,
+                            user.icon,
+                            GROUP_CONCAT(DISTINCT post_images.image_name),
+                            post.id,
+                            COUNT(DISTINCT postLike.user_id),
+                            CASE
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM postLike
+                                    WHERE postLike.post_id = post.id
+                                    AND postLike.user_id = %s -- ログイン中のユーザーのIDをここに挿入
+                                )
+                                THEN True
+                                ELSE False
+                            END AS user_liked,
+                            CASE
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM bookmark
+                                    WHERE bookmark.post_id = post.id
+                                    AND bookmark.user_id = %s -- ログイン中のユーザーのIDをここに挿入
+                                )
+                                THEN True
+                                ELSE False
+                            END AS bookmark_user
+                        FROM post
+                        JOIN user ON user.id = post.user_id
+                        LEFT JOIN post_images ON post.id = post_images.post_id
+                        INNER JOIN postLike ON post.id = postLike.post_id
+                        LEFT JOIN bookmark ON post.id = bookmark.post_id
+                        WHERE postLike.user_id = %s
+                        GROUP BY post.id
+                        ORDER BY post.created_at DESC
+                        """, (session["user_id"], session["user_id"], session["user_id"]))
+
+        post_data = cur.fetchall()
+
+        data_list = []
+        print(post_data)
+
+        for data in post_data:
+            data_name = {}
+            data_name["postTitle"] = data[0]
+            data_name["postText"] = data[1]
+            data_name["datetime"] = data[2].strftime("%Y/%m/%d %H:%M")
+            data_name["userId"] = data[3]
+            data_name["username"] = data[4]
+            data_name["userIcon"] = data[5]
+
+            if data[6]:
+                data_name["postImages"] = data[6].split(",")
+            else:
+                data_name["postImages"] = []
+            data_name["postId"] = data[7]
+
+            data_name["likeCount"] = data[8]
+
+            if "user_id" in session:
+                if data[9] == 1:
+                    data_name["favorite"] = True
+                else:
+                    data_name["favorite"] = False
+
+                if data[10] == 1:
+                    # print(data[9])
+                    data_name["bookmark"] = True
+                else:
+                    data_name["bookmark"] = False
+
+            data_list.append(data_name)
+
+            print(data_list, "datalist")
+
+        cur.execute("""
+                        SELECT user.name, comment_text, created_at
+                        FROM comment
+                        LEFT JOIN user ON comment.user_id = user.id
+                        WHERE post_id = %s
+                        """, (postId,))
+
+        commentData = cur.fetchall()
+
+        commentList = []
+
+        for data in commentData:
+            comment = {}
+            comment["userId"] = data[0]
+            comment["comment"] = data[1]
+            comment["time"] = data[2].strftime("%Y/%m/%d %H:%M")
+            commentList.append(comment)
+
+        return jsonify({"success": True, "post_data": data_list, "loginState": loginState, "commentList": commentList})
+
+
+@app.route("/filterToday", methods=["POST"])
+def filterToday():
+    conn = mysql_conn()
+    cur = conn.cursor()
+
+    loginState = False
+
+    if "user_id" in session:
+        loginState = session["user_id"]
+        profileId = request.form.get("profile")
+        print(profileId)
+        where = " AND user.id = %s"
+        where = ""
+        cur.execute(f"""
+                    SELECT
+                        post.post_name,
+                        post.post_text,
+                        post.created_at,
+                        user.id,
+                        user.name,
+                        user.icon,
+                        GROUP_CONCAT(DISTINCT post_images.image_name),
+                        post.id,
+                        COUNT(DISTINCT postLike.user_id),
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM postLike
+                                WHERE postLike.post_id = post.id
+                                AND postLike.user_id = %s -- ログイン中のユーザーのIDをここに挿入
+                            )
+                            THEN True
+                            ELSE False
+                        END AS user_liked,
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM bookmark
+                                WHERE bookmark.post_id = post.id
+                                AND bookmark.user_id = %s -- ログイン中のユーザーのIDをここに挿入
+                            )
+                            THEN True
+                            ELSE False
+                        END AS bookmark_user
+                    FROM post
+                    JOIN user ON user.id = post.user_id
+                    LEFT JOIN post_images ON post.id = post_images.post_id
+                    LEFT JOIN postLike ON post.id = postLike.post_id
+                    LEFT JOIN bookmark ON post.id = bookmark.post_id
+                    WHERE created_at LIKE '{datetime.today().date()}%' {where}
+                    GROUP BY post.id
+                    ORDER BY COUNT(postLike.post_id) DESC
+                    """, (session["user_id"], session["user_id"]))
+
+    else:
+        cur.execute("""
+                    SELECT
+                        post.post_name,
+                        post.post_text,
+                        post.created_at,
+                        user.id,
+                        user.name,
+                        user.icon,
+                        GROUP_CONCAT(DISTINCT post_images.image_name),
+                        post.id,
+                        COUNT(DISTINCT postLike.user_id)
+                    FROM post
+                    JOIN user ON user.id = post.user_id
+                    LEFT JOIN post_images ON post.id = post_images.post_id
+                    LEFT JOIN postLike ON post.id = postLike.post_id
+                    LEFT JOIN bookmark ON post.id = bookmark.post_id
+                    GROUP BY post.id
+                    ORDER BY COUNT(postLike.post_id) DESC
+                    """)
+
+    post_data = cur.fetchall()
+
+    data_list = []
+    # print(post_data)
+
+    for data in post_data:
+        data_name = {}
+        data_name["postTitle"] = data[0]
+        data_name["postText"] = data[1]
+        data_name["datetime"] = data[2].strftime("%Y/%m/%d %H:%M")
+        data_name["userId"] = data[3]
+        data_name["username"] = data[4]
+        data_name["userIcon"] = data[5]
+        if data[6]:
+            data_name["postImages"] = data[6].split(",")
+        else:
+            data_name["postImages"] = []
+        data_name["postId"] = data[7]
+
+        data_name["likeCount"] = data[8]
+
+        if "user_id" in session:
+            if data[9] == 1:
+                data_name["favorite"] = True
+            else:
+                data_name["favorite"] = False
+
+            if data[10] == 1:
+                # print(data[9])
+                data_name["bookmark"] = True
+            else:
+                data_name["bookmark"] = False
+
+        data_list.append(data_name)
+
+        # print(data_list)
+
+    return jsonify({"success": True, "post_data": data_list, "loginState": loginState})
+
+@app.route("/filterSurge", methods=["POST"])
+def filterSurge():
+    conn = mysql_conn()
+    cur = conn.cursor()
+
+    loginState = False
+
+    if "user_id" in session:
+        loginState = session["user_id"]
+        profileId = request.form.get("profile")
+        print(profileId)
+        where = " AND user.id = %s"
+        where = ""
+        cur.execute(f"""
+                    SELECT
+                        post.post_name,
+                        post.post_text,
+                        post.created_at,
+                        user.id,
+                        user.name,
+                        user.icon,
+                        GROUP_CONCAT(DISTINCT post_images.image_name),
+                        post.id,
+                        COUNT(DISTINCT postLike.user_id),
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM postLike
+                                WHERE postLike.post_id = post.id
+                                AND postLike.user_id = %s -- ログイン中のユーザーのIDをここに挿入
+                            )
+                            THEN True
+                            ELSE False
+                        END AS user_liked,
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM bookmark
+                                WHERE bookmark.post_id = post.id
+                                AND bookmark.user_id = %s -- ログイン中のユーザーのIDをここに挿入
+                            )
+                            THEN True
+                            ELSE False
+                        END AS bookmark_user
+                    FROM post
+                    JOIN user ON user.id = post.user_id
+                    LEFT JOIN post_images ON post.id = post_images.post_id
+                    LEFT JOIN postLike ON post.id = postLike.post_id
+                    LEFT JOIN bookmark ON post.id = bookmark.post_id
+                    INNER JOIN today_postlike_count ON today_postlike_count.post_id = post.id
+                    WHERE today_postlike_count.date = DATE(NOW()) AND today_postlike_count.count > 0
+                    GROUP BY post.id
+                    ORDER BY today_postlike_count.count DESC
+                    """, (session["user_id"], session["user_id"]))
+
+    else:
+        cur.execute("""
+                    SELECT
+                        post.post_name,
+                        post.post_text,
+                        post.created_at,
+                        user.id,
+                        user.name,
+                        user.icon,
+                        GROUP_CONCAT(DISTINCT post_images.image_name),
+                        post.id,
+                        COUNT(DISTINCT postLike.user_id)
+                    FROM post
+                    JOIN user ON user.id = post.user_id
+                    LEFT JOIN post_images ON post.id = post_images.post_id
+                    LEFT JOIN postLike ON post.id = postLike.post_id
+                    LEFT JOIN bookmark ON post.id = bookmark.post_id
+                    GROUP BY post.id
+                    ORDER BY COUNT(postLike.post_id) DESC
+                    """)
+
+    post_data = cur.fetchall()
+
+    data_list = []
+    # print(post_data)
+
+    for data in post_data:
+        data_name = {}
+        data_name["postTitle"] = data[0]
+        data_name["postText"] = data[1]
+        data_name["datetime"] = data[2].strftime("%Y/%m/%d %H:%M")
+        data_name["userId"] = data[3]
+        data_name["username"] = data[4]
+        data_name["userIcon"] = data[5]
+        if data[6]:
+            data_name["postImages"] = data[6].split(",")
+        else:
+            data_name["postImages"] = []
+        data_name["postId"] = data[7]
+
+        data_name["likeCount"] = data[8]
+
+        if "user_id" in session:
+            if data[9] == 1:
+                data_name["favorite"] = True
+            else:
+                data_name["favorite"] = False
+
+            if data[10] == 1:
+                # print(data[9])
+                data_name["bookmark"] = True
+            else:
+                data_name["bookmark"] = False
+
+        data_list.append(data_name)
+
+        # print(data_list)
+
+    return jsonify({"success": True, "post_data": data_list, "loginState": loginState})
 
 
 if __name__ == "__main__":
